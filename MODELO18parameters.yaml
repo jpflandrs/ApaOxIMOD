@@ -1,0 +1,133 @@
+# Summary : This is the companion file for MC simulation of the model driving the evolution of δ18O in apatite during diagenesis and analytical bias.
+#                  This file may be read and modified in a basic text editor, but it is far better to use a more adapted editor like
+#                                               Mac OS: BBEedit (or even better Xcode)
+#                                               Linux : medit
+#                                               Windows : notepad++
+
+#################################################################################
+#               APAtite OXygen Isotope Simulation (modeling).                   #
+#                   C. Lecuyer and JP. Flandrois 2021                           #
+#    ApaOxIS has been designed to simulate the fate of biogenic apatite δ18O    #
+#                during diagenesis in given conditions.                         #
+#################################################################################
+
+
+
+###########################
+#        HOW TO USE
+#     ApaOxISMODEL.py
+###########################
+# launching the program like this :
+#               python3 ApaOxISMODEL.py -m parameters.yaml output_directory
+
+#parameters.yaml is _this file_ (any name) remember that YAML is a human-readable data serialization language where identation and white-spaces are signifiant
+
+### Description of the usage:
+
+#ApaOxIS [-h] [-W | -A | -T | -S | -m | -TW | -AW] i o
+
+#positional arguments:
+#  i                  the parameter file (yaml file, WARNING: structure is mandatory)
+#  o                  The _directory_ that will gather the results
+#
+#optional arguments:
+#  -h, --help         show this help message and exit
+#  -W, --Water        Cross variations of δ18OWi and W/A
+#  -A, --Apatite      Cross variations of δ18OAi and W/A
+#  -T, --Temperature  Cross variations of T and W/A
+#  -S, --Sigma        Cross variations of analytical σ and W/A
+#  -m, --Model        Only one histogram for given fixed conditions
+#  -TW, --TwinTW      Both variations of T and δ18OWi within 1-4 ranges of W/A : a collection of histograms
+#  -AW, --TwinAW      Both variations of δ18OAi and δ18OWi within 1-4 ranges of W/A : a collection of histograms
+
+
+
+###########################
+#       BASIC USE
+###########################
+    # if the line contains "# !! not a parameter,  must remain unchanged  !!" => this is the description of a python dictionnary key, the program _must_ find it unchanged...
+    # else you may find the indication "_parameter_" that points out something that may change, modify with the values of the parameters of your simulation
+    # IMPORTANT : the numeric or text is ALWAYS separated from the ":" by _a space_ and the _struture with the white-spaces identation_ is higly significant and must remain unchanged
+    # "#" correspond to annotations and explaination
+    
+    # There are TWO chapters in the parameters, I) is dealing with the physico-chemical model II) concern the formatting of the outputs and the computer
+    #
+    
+    
+###########################
+#    PARAMETERS VALUE
+###########################
+
+### CHAPTER I: MODEL PARAMETERS ###
+    # Ia: PHYSICO-CHEMICAL PARAMETERS
+Modelparameterdictionary :      # !! not a parameter,  must remain unchanged  !!
+    modeling: True              # !! not a parameter,  must remain unchanged  !! <= this is a control to discriminate the two possible yaml files
+    arraysize: 500000    #nb of Monte-Carlo simulations, an integer not less than 250,000 (exploratory), ideally over 500,000, and not more than 5,000,000. 
+    # 4 parameters may be set and they may be explored by steps (T, d18OWi, d18OAi) and A/W may be constant or varying by using a range and a sub-range and the way to explore the A/W effect
+    # note that 10 values for T, d18OWi and d18OAi led to 9x9x9 will generate 81 pages containing 9 histograms !
+    # adding A/W variations may increase this to more than 1000 pages !
+    #
+    
+    T:      # !! not a parameter,  must remain unchanged  !!
+        initialvalue: 15               #_parameter_ Temperature (C°) during the diagenesis process, positive integer
+        step : 5    #_parameter_ the numerical value of a step
+        nb_steps: 4 #_parameter_ the number of steps, maximum 9
+        
+    d18OWi:     # !! not a parameter,  must remain unchanged  !!
+        initialvalue: -8.0        #parameter_ Initial δ18O for water, float
+        step : -2   #_parameter_ the numerical value of a step
+        nb_steps: 4 # _parameter_ the number of steps, maximum 9
+                    #ex: step=-1 : 8*-1=-8 if initialvalue=-8.0 range will be (-8, -16)
+                    # ex: step=-2 : 8*-2=-16 if initialvalue=-8.0 range will be (-8,-24)
+        
+    d18OAi:     # !! not a parameter,  must remain unchanged  !!
+        initialvalue: 20.0        #Initial δ18O for apatite, float
+        step: 1 #_parameter_ the numerical value of a step
+        nb_steps: 4 # _parameter_ the number of steps, maximum 9
+        
+    WA:     # !! not a parameter,  must remain unchanged  !!
+        WAlow: 0.05          #_parameter_ the lower A/W ratio during the simulation, float AWlow > 0
+        WAhigh: 0.95         #_parameter_ the higher A/W ratio during the simulation, float AWhigh < 1
+    #this A/W range may be explored by restricting or moving a window of p % of the A/W range
+    #"fixed" the window is identical to the A/W space [[xxxxxxx]] This however is always presented in the first column ...
+    #"topdown" schreading from top to bottom [[xxxxxxx]]-> [[xxxxxx] ]-> [[xxxxx]  ]-> [[xxxx]   ]-> [[xxx]    ]
+    #"downtop" schreading from bottom to top [[xxxxxxx]]-> [ [xxxxxx]]-> [  [xxxxx]]-> [   [xxxx]]-> [    [xxx]]
+    #"moving" moving a window  [[xxx]    ]-> [ [xxx]   ]-> [  [xxx]  ]-> [   [xxx] ]-> [    [xxx]]
+    #[xxx]/[xxxxxxx] is the ratio (W_ratio) of the remaining window / sliding area
+        WA_window: "moving" #_ parameter_ "moving" "topdown" "downtop", not working for the AW and TW options where "moving" is always used
+        WA_window_slices: 3 # _parameter_ in how many parts do I cut the W/A window ? from 2 to 5, this is important to limit the complexity of the outputs
+                      # Note that the full range is always studied and shown in the first column of the histograms.
+
+    # Ib: SIMULATION OF THE LABORATORY PROCESSES
+AnalyticalProcessSimulation : True # _parameter_  set to False if you dont want to include the experimental error
+analyticalStd : # !! not a parameter,  must remain unchanged  !!
+    sigma : 0.1 # _parameter_ usually 0.05 (default) or 0.1
+    step: 0.05 # _parameter_ we can also visualise the effect of INCRASING sigma by steps
+    nb_steps: 3 # _parameter_ the number of steps, maximum 9
+
+### CHAPTER II: THE OUTPUT ###
+    # IIa: AERA OF THE OUTPUT
+
+Rendering:  # !! not a parameter,  must remain unchanged  !!
+    outputAs: svg # _parameter_ can be svg (original design) or pdf
+    figSize: 20,20 #_parameter_ w,h increase h (and possibly w) to get the good view
+    userTitle: "" # _parameter_ adding an useful indication of your own
+    bins: 100 # _parameter_ the number of bins for the histogram
+    d18OAf_range: 13,20.1 # _parameter_ the  d18OAf scale, ealways try with a large range like 12-22 and then focuse...
+    
+    # IIb: THE COMPUTER
+# Number of threads [currently not used]
+threadsCount: auto            # _parameter_ [currently not used] an integer, else <auto> enables the optimization of the number of threads. Note that the speed will not be decreased proportionally with the number of threads (i.e over 1/2 of the total threads) as expected with multithreading there is an optimum.  Typically on a iMacPro (2017) with 3 GHz Intel Xeon W 20 threads: the speed increases rapidly until 10 threads, then the gain in speed is low (a very slowly growing plateau)
+
+# The output will be send to your browser as it can read the svg/pdf graphs
+instructionAndBrowserPath: open FILEPATH -a safari #_parameter_ instruction for your browsed to launch automatically the rendering through the browser. FILEPATH will be change to the current path automaticaly so DO NOT CHANGE THIS <FILEPATH>
+                            # in macOS:
+                            #   FILEPATH open  -a safari or open FILEPATH -a safari
+                            # in Unix and Linux it should be
+                            #   firefox FILEPATH
+                            # in window launching the chrome browser should be
+                            #   start chrome FILEPATH
+                            # change accordingly
+    #IMPORTANT: the name of the file is summarizing the parameters [-W | -A | -T | -S | -m | -AW | TW],arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab
+    #each value is found in this order, separated by a tilde
+    #ApaOxIS_model~m~500000~15~5~5~-8.0~-2~5~20.0~1~9~0.05~0.95~moving~2~True~0.1.svg
