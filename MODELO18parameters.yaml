@@ -1,15 +1,21 @@
-# Summary : This is the companion file for MC simulation of the model driving the evolution of δ18O in apatite during diagenesis and analytical bias.
+#   Summary : This is the companion file for
+#                                           ApaOxIMOD
+# A Monte-Carlo simulation of the alteration of the original oxygen isotope composition of biogenic apatites
+#   ----
+#   See the corresponding publication:
+#   "Mitigation of the diagenesis risk in biological apatite δ18O interpretation"
+#               Christophe Lécuyer(1) and Jean-Pierre Flandrois(2)
+#   (1)LGL-TPE, CNRS UMR5276, ENSL, Univ Lyon, Univ Lyon 1, Institut Universitaire de France, 43 bd du 11 Novembre 1918, 69622 Villeurbanne, France.
+#   (2)LBBE, CNRS UMR5558, Univ Lyon, Univ Lyon 1, 43 bd du 11 Novembre 1918, 69622 Villeurbanne, France.
+#   ----
 #                  This file may be read and modified in a basic text editor, but it is far better to use a more adapted editor like
 #                                               Mac OS: BBEedit (or even better Xcode)
 #                                               Linux : medit
 #                                               Windows : notepad++
+#   ----
+#   The program is made available under the [CeCILL2.1](http://www.cecill.info/licences/Licence_CeCILL_V2.1-en.txt) licence.
+#   ----
 
-#################################################################################
-#               APAtite OXygen Isotope Simulation (modeling).                   #
-#                   C. Lecuyer and JP. Flandrois 2021                           #
-#    ApaOxIS has been designed to simulate the fate of biogenic apatite δ18O    #
-#                during diagenesis in given conditions.                         #
-#################################################################################
 
 
 
@@ -67,7 +73,7 @@ Modelparameterdictionary :      # !! not a parameter,  must remain unchanged  !!
     # note that 10 values for T, d18OWi and d18OAi led to 9x9x9 will generate 81 pages containing 9 histograms !
     # adding A/W variations may increase this to more than 1000 pages !
     #
-    
+    # mind the "" around words (not for numbers or boolean)
     T:      # !! not a parameter,  must remain unchanged  !!
         initialvalue: 15               #_parameter_ Temperature (C°) during the diagenesis process, positive integer
         step : 5    #_parameter_ the numerical value of a step
@@ -93,7 +99,6 @@ Modelparameterdictionary :      # !! not a parameter,  must remain unchanged  !!
     #"topdown" schreading from top to bottom [[xxxxxxx]]-> [[xxxxxx] ]-> [[xxxxx]  ]-> [[xxxx]   ]-> [[xxx]    ]
     #"downtop" schreading from bottom to top [[xxxxxxx]]-> [ [xxxxxx]]-> [  [xxxxx]]-> [   [xxxx]]-> [    [xxx]]
     #"moving" moving a window  [[xxx]    ]-> [ [xxx]   ]-> [  [xxx]  ]-> [   [xxx] ]-> [    [xxx]]
-    #[xxx]/[xxxxxxx] is the ratio (W_ratio) of the remaining window / sliding area
         WA_window: "moving" #_ parameter_ "moving" "topdown" "downtop", not working for the AW and TW options where "moving" is always used
         WA_window_slices: 3 # _parameter_ in how many parts do I cut the W/A window ? from 2 to 5, this is important to limit the complexity of the outputs
                       # Note that the full range is always studied and shown in the first column of the histograms.
@@ -109,14 +114,13 @@ analyticalStd : # !! not a parameter,  must remain unchanged  !!
     # IIa: AERA OF THE OUTPUT
 
 Rendering:  # !! not a parameter,  must remain unchanged  !!
-    outputAs: svg # _parameter_ can be svg (original design) or pdf
+    outputAs: "svg" # _parameter_ can be svg (original design) or pdf
     figSize: 20,20 #_parameter_ w,h increase h (and possibly w) to get the good view
     userTitle: "" # _parameter_ adding an useful indication of your own
     bins: 100 # _parameter_ the number of bins for the histogram
     d18OAf_range: 13,20.1 # _parameter_ the  d18OAf scale, ealways try with a large range like 12-22 and then focuse...
     
     # IIb: THE COMPUTER
-# Number of threads [currently not used]
 threadsCount: auto            # _parameter_ [currently not used] an integer, else <auto> enables the optimization of the number of threads. Note that the speed will not be decreased proportionally with the number of threads (i.e over 1/2 of the total threads) as expected with multithreading there is an optimum.  Typically on a iMacPro (2017) with 3 GHz Intel Xeon W 20 threads: the speed increases rapidly until 10 threads, then the gain in speed is low (a very slowly growing plateau)
 
 # The output will be send to your browser as it can read the svg/pdf graphs

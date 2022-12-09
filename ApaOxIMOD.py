@@ -8,10 +8,18 @@ Monte-Carlo simulation of the alteration of the original oxygen isotope composit
                                     2023  mk03
 
 * Author and maintainer
-** Equations and solution
-
+** Equations and original idea
+----
+See the corresponding publication:
+"Mitigation of the diagenesis risk in biological apatite δ18O interpretation"
+Christophe Lécuyer(1) and Jean-Pierre Flandrois(2)
+(1)LGL-TPE, CNRS UMR5276, ENSL, Univ Lyon, Univ Lyon 1, Institut Universitaire de France, 43 bd du 11 Novembre 1918, 69622 Villeurbanne, France.
+(2)LBBE, CNRS UMR5558, Univ Lyon, Univ Lyon 1, 43 bd du 11 Novembre 1918, 69622 Villeurbanne, France.
+----
+The program is made available under the [CeCILL2.1](http://www.cecill.info/licences/Licence_CeCILL_V2.1-en.txt) licence.
+----
 How it works :
-The simulation tool ApaOxIMOD is basically a Monte Carlo process simulation, based on the creation of a huge array of A/W values taken from an uniform distribution between given threshold values. A moving A/W window may be set within the threshold values to study the influence of modifications of the A/W environment. This represents the diversity of the deposit situation and physical state of the biological apatite. Typically, 500,000 situations are simulated. For each situation equation Δ=(117.4-T)/4.5, Lécuyer et al. (2013), is use to compute the δ18O in biological apatite δ18O(A)f at the equilibrium on the whole array given the temperature T, initial δ18O in biological apatite (δ18O(A)i) and the δ18O in water δ18O(W)i. The four parameters (T, d18OWi, d18OAi) may be set and their variations may be explored by steps for each simulated A/W environment to analyze the relative influence of each parameter. The resulting δ18O(A)f array is then optionally used to simulate the analytical uncertainty by using normal law random sampling whose mean being the individual δ18O(A)f and given standard deviation. The output is a family of histograms summarizing the possible fate of δ18O(A)i in the population after the diagenetic episode.
+The simulation tool ApaOxIMOD is basically a Monte Carlo process simulation, based on the creation of a huge array of A/W values taken from an uniform distribution between given threshold values. A moving A/W window may be set within the threshold values to study the influence of modifications of the A/W environment. This represents the diversity of the deposit situation and physical state of the biological apatite. Typically, 500,000 situations are simulated. For each situation equation (4) is used to compute the δ18O in biological apatite δ18O(A)f at the equilibrium on the whole array given the temperature T, initial δ18O in biological apatite (δ18O(A)i) and the δ18O in water δ18O(W)i. The four parameters (T, d18OWi, d18OAi) may be set and their variations may be explored by steps for each simulated A/W environment to analyze the relative influence of each parameter. The output is a family of histograms summarizing the possible fate of δ18O(A)i in the population after the diagenetic episode.
 
 How it is written :
     The program is entirely relying on the array structure of NumPy to take advantage of the speed and efficiency of NumPy in manipulating large arrays. The statistics are also computing with NumPy function and python3 is minimally used to connect Nympy functions and for reporting. The 15 possible parameters and options are taken from a pilot file using the YAML format that requires only a plain-text editor to be quickly changed.
@@ -272,7 +280,8 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
                     
     plt.suptitle("Effect of Variation of"+sentenceC+" in multiple W/A ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
         #plt.title("Effect of Variation of δ18OWi in multiple W/A ratio ranges")
-    fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".svg")
+    if typeOfFile =="pdf": fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".pdf")
+    if typeOfFile =="svg":fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".svg")
         #plt.show()
     plt.savefig(fileIs)
     halt()
@@ -317,42 +326,46 @@ def readParameters(parameterYAML):
     parameterdictionary = yaml.load(yaml_file, Loader=yaml.SafeLoader) #this is the safe way tp prevent exploits
     try:
         modeling=parameterdictionary["Modelparameterdictionary"]["modeling"]
-    
+        print (modeling)
         arraysize=parameterdictionary["Modelparameterdictionary"]["arraysize"]
-        
+        print (arraysize)
         T=parameterdictionary["Modelparameterdictionary"]["T"]["initialvalue"]
         Tstep=parameterdictionary["Modelparameterdictionary"]["T"]["step"]
         Tnbsteps=parameterdictionary["Modelparameterdictionary"]["T"]["nb_steps"]
-        
+        print (T,Tstep,Tnbsteps)
         d18OWi=parameterdictionary["Modelparameterdictionary"]["d18OWi"]["initialvalue"]
         d18OWistep=parameterdictionary["Modelparameterdictionary"]["d18OWi"]["step"]
         d18OWinbsteps=parameterdictionary["Modelparameterdictionary"]["d18OWi"]["nb_steps"]
-        
+        print (d18OWi,d18OWistep,d18OWinbsteps)
         d18OAi=parameterdictionary["Modelparameterdictionary"]["d18OAi"]["initialvalue"]
         d18OAistep=parameterdictionary["Modelparameterdictionary"]["d18OAi"]["step"]
         d18OAinbsteps=parameterdictionary["Modelparameterdictionary"]["d18OAi"]["nb_steps"]
-        
+        print (d18OAi,d18OAistep,d18OAinbsteps)
         WAlow=parameterdictionary["Modelparameterdictionary"]["WA"]["WAlow"]
         WAhigh=parameterdictionary["Modelparameterdictionary"]["WA"]["WAhigh"]
         WA_window=parameterdictionary["Modelparameterdictionary"]["WA"]["WA_window"] #"moving" "topdown" "downtop" "fixed"
         WA_window_slices=parameterdictionary["Modelparameterdictionary"]["WA"]["WA_window_slices"]
-
+        print (WAlow,WAhigh,WA_window,WA_window_slices)
         analyticalProcessSimulation=parameterdictionary["AnalyticalProcessSimulation"] #True or False
         sigmaLab=parameterdictionary["analyticalStd"]["sigma"]
         sigmaLabstep=parameterdictionary["analyticalStd"]["step"]
         sigmaLabnbsteps=parameterdictionary["analyticalStd"]["nb_steps"]
-        
+        print (analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps)
         threadsCount=parameterdictionary["threadsCount"] #auto or a number
         instructionAndBrowserPath=parameterdictionary["instructionAndBrowserPath"]
         usersize=parameterdictionary["Rendering"]["figSize"].split(',')
-        #print(usersize)
+        print(threadsCount,instructionAndBrowserPath,usersize)
         figsize=(int(usersize[0]),int(usersize[1]))
+        print(figsize)
         userTitle=parameterdictionary["Rendering"]["userTitle"]
         bins=parameterdictionary["Rendering"]["bins"]
+        print (userTitle)
+        print (bins)
         d19OAf_range=(float(parameterdictionary["Rendering"]["d18OAf_range"].split(',')[0]),float(parameterdictionary["Rendering"]["d18OAf_range"].split(',')[1]))
         typeOfFile=parameterdictionary["Rendering"]["outputAs"]
-        print (parameterdictionary)
+        print (typeOfFile)
         print ("All is OK")
+        print (parameterdictionary)
         
         return arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,userTitle,d19OAf_range,typeOfFile
     except :
