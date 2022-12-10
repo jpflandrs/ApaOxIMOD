@@ -69,7 +69,7 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
         INIT2=d18OWi
         STEP2=d18OWistep
         NB2=d18OWinbsteps
-    if args.TwinTW: #two parameters varying + W/A by ranges
+    if args.TwinTW: #two parameters varying + A/W by ranges
         INIT1=T
         STEP1=Tstep
         NB1=Tnbsteps
@@ -160,7 +160,7 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
                         axes[linescpt][kolmncpt].set_xlabel("δ18OAf", size=12)
                         axes[linescpt][kolmncpt].set_ylabel("Count", size=12)
                         leg = axes[linescpt][kolmncpt].legend(loc='upper left')
-                        axes[linescpt][kolmncpt].set_title("W/A ="+str(jumpBegin)[:4]+"-"+str(jumpEnd)[:4]+sentenceA+ str(PROCESS), fontsize=14)
+                        axes[linescpt][kolmncpt].set_title("A/W ="+str(jumpBegin)[:4]+"-"+str(jumpEnd)[:4]+sentenceA+ str(PROCESS), fontsize=14)
                     else:
                         if args.Temperature: data = arraysFiller(PROCESS,d18OWi,d18OAi,arraysize,jumpBegin,jumpEnd,analyticalProcessSimulation,sigmaLab)
                         if args.Sigma: data = arraysFiller(T,d18OWi,d18OAi,arraysize,jumpBegin,jumpEnd,analyticalProcessSimulation,PROCESS)
@@ -172,7 +172,7 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
                         leg.draw_frame(False)
                         axes[linescpt][1].set_xlabel("δ18OAf", size=12)
                         axes[linescpt][1].set_ylabel("Count", size=12)
-                        axes[linescpt][1].set_title("W/A varying (see legend) "+sentenceB+ str(PROCESS), fontsize=14)
+                        axes[linescpt][1].set_title("A/W varying (see legend) "+sentenceB+ str(PROCESS), fontsize=14)
                     if WA_window=="moving":
                         if steps==-1 :
                             jumpEnd=WAlow+jump
@@ -180,21 +180,23 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
                         else:
                             jumpBegin=jumpEnd
                             jumpEnd=jumpEnd+jump
-                    if WA_window=="downtop":                    #plt.title('δ18OA final values by classes, variations of δ18OWi', fontsize=10)
+                    elif WA_window=="downtop":                    #plt.title('δ18OA final values by classes, variations of δ18OWi', fontsize=10)
                         if steps==-1 :
                             jumpEnd=WAhigh
                             jumpBegin=WAlow
                         else:
                             jumpBegin=jumpBegin+jump
                             jumpEnd=WAhigh
-                    if WA_window=="topdown":                    #plt.title('δ18OA final values by classes, variations of δ18OWi', fontsize=10)
+                    elif WA_window=="topdown":                    #plt.title('δ18OA final values by classes, variations of δ18OWi', fontsize=10)
                         if steps==-1 :
                             jumpEnd=WAhigh
                             jumpBegin=WAlow
                         else:
                             jumpBegin=WAlow #jumpBegin+jump
                             jumpEnd=jumpEnd-jump
-                
+                    else:
+                        jumpEnd=WAhigh
+                        jumpBegin=WAlow
                     steps+=1
             PROCESS+=STEP
             linescpt+=1
@@ -202,14 +204,14 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
             steps=0
             #linescpt=0 if kolmncpt+=1 > ncols else kolmncpt+=1
             
-        plt.suptitle("Effect of Variation of"+sentenceC+" in multiple W/A ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
-        #plt.title("Effect of Variation of δ18OWi in multiple W/A ratio ranges")
+        plt.suptitle("Effect of Variation of"+sentenceC+" in multiple A/W ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
+        #plt.title("Effect of Variation of δ18OWi in multiple A/W ratio ranges")
         fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+"."+typeOfFile)
         #plt.show()
         plt.savefig(fileIs)
     
     
-    if args.TwinTW or args.TwinAW: #only moving window on W/A range
+    if args.TwinTW or args.TwinAW: #only moving window on A/W range
         colors = ['#A52A2A','#800000','#8B4513', '#a0522d', '#D2691E', '#cd853f','#b8860b','#ffa07a', '#daa520' ,'#BC8F8F',  ]#["b", "r", "m", "w", "k", "g", "c", "y"]#ffdead #A52A2A #8B4513
         
         
@@ -256,14 +258,14 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
                     else:
                         axes[linescpt][w].hist(data, bins=bins, range=d19OAf_range,alpha=0.5, density=False, label="δ18OWi "+str(DEUX)[:4])
                     axes[linescpt][w].set_xlabel("δ18OAf", size=12)
-                    axes[linescpt][w].set_title(VAR+str(UN)+"  W/A range:"+str(jumpBegin).split(".")[0]+"."+str(jumpBegin).split(".")[1][0:2]+"-"+str(jumpEnd).split(".")[0]+"."+str(jumpEnd).split(".")[1][0:2], size=14)
+                    axes[linescpt][w].set_title(VAR+str(UN)+"  A/W range:"+str(jumpBegin).split(".")[0]+"."+str(jumpBegin).split(".")[1][0:2]+"-"+str(jumpEnd).split(".")[0]+"."+str(jumpEnd).split(".")[1][0:2], size=14)
                     leg = axes[linescpt][w].legend(loc='upper left')
                     leg.draw_frame(False)
                     axes[linescpt][w].set_xlabel("δ18OAf", size=12)
                     axes[linescpt][w].set_ylabel("Count", size=12)
                     klr+=1
                 linescpt+=1
-        plt.suptitle("Effect of Variation of "+sentenceC+" within a range of W/A from "+(str(WAlow)+" to "+str(WAhigh))+ " \nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
+        plt.suptitle("Effect of Variation of "+sentenceC+" within a range of A/W from "+(str(WAlow)+" to "+str(WAhigh))+ " \nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
         fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+"."+typeOfFile)
         #plt.show()
         plt.savefig(fileIs)
@@ -278,8 +280,8 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
     EndinstructionAndBrowserPath=instructionAndBrowserPath.replace("FILEPATH",fileIs)
     os.system(EndinstructionAndBrowserPath)
                     
-    plt.suptitle("Effect of Variation of"+sentenceC+" in multiple W/A ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
-        #plt.title("Effect of Variation of δ18OWi in multiple W/A ratio ranges")
+    plt.suptitle("Effect of Variation of"+sentenceC+" in multiple A/W ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
+        #plt.title("Effect of Variation of δ18OWi in multiple A/W ratio ranges")
     if typeOfFile =="pdf": fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".pdf")
     if typeOfFile =="svg":fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".svg")
         #plt.show()
@@ -399,13 +401,13 @@ if __name__ == "__main__":
 
     #print("\n\n#####################################  ApaOxIS ###################################################\n")
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("-W", "--Water", action='store_true', help="Cross variations of δ18OWi and W/A")
-    group.add_argument("-A", "--Apatite", action='store_true', help="Cross variations of δ18OAi and W/A")
-    group.add_argument("-T", "--Temperature", action='store_true', help="Cross variations of T and W/A")
-    group.add_argument("-S", "--Sigma", action='store_true', help="Cross variations of analytical σ and W/A")
+    group.add_argument("-W", "--Water", action='store_true', help="Cross variations of δ18OWi and A/W")
+    group.add_argument("-A", "--Apatite", action='store_true', help="Cross variations of δ18OAi and A/W")
+    group.add_argument("-T", "--Temperature", action='store_true', help="Cross variations of T and A/W")
+    group.add_argument("-S", "--Sigma", action='store_true', help="Cross variations of analytical σ and A/W")
     group.add_argument("-m", "--Model", action='store_true', help="Only one histogram for given fixed conditions")
-    group.add_argument("-TW", "--TwinTW", action='store_true', help="Both variations of T and δ18OWi within 1-4 ranges of W/A : a collection of histograms")
-    group.add_argument("-AW", "--TwinAW", action='store_true', help="Both variations of δ18OAi and δ18OWi within 1-4 ranges of W/A : a collection of histograms")
+    group.add_argument("-TW", "--TwinTW", action='store_true', help="Both variations of T and δ18OWi within 1-4 ranges of A/W : a collection of histograms")
+    group.add_argument("-AW", "--TwinAW", action='store_true', help="Both variations of δ18OAi and δ18OWi within 1-4 ranges of A/W : a collection of histograms")
     parser.add_argument("i", type=str, help="the parameter file (yaml file, WARNING: structure is mandatory)")
     parser.add_argument("o", type=str, help="The _directory_ that will gather the results ")
     args = parser.parse_args()
