@@ -68,7 +68,7 @@
     # Ia: PHYSICO-CHEMICAL PARAMETERS
 Modelparameterdictionary :      # !! not a parameter,  must remain unchanged  !!
     modeling: True              # !! not a parameter,  must remain unchanged  !! <= this is a control to discriminate the two possible yaml files
-    arraysize: 1000000    #nb of Monte-Carlo simulations, an integer not less than 250,000 (exploratory), ideally over 500,000, and not more than 5,000,000.
+    arraysize: 100000    #nb of Monte-Carlo simulations, an integer not less than 250,000 (exploratory), ideally over 500,000, and not more than 5,000,000.
     # 4 parameters may be set and they may be explored by steps (T, d18OWi, d18OAi) and A/W may be constant or varying by using a range and a sub-range and the way to explore the A/W effect
     # note that 10 values for T, d18OWi and d18OAi led to 9x9x9 will generate 81 pages containing 9 histograms !
     # adding A/W variations may increase this to more than 1000 pages !
@@ -99,8 +99,8 @@ Modelparameterdictionary :      # !! not a parameter,  must remain unchanged  !!
     #"topdown" schreading from top to bottom [[xxxxxxx]]-> [[xxxxxx] ]-> [[xxxxx]  ]-> [[xxxx]   ]-> [[xxx]    ]
     #"downtop" schreading from bottom to top [[xxxxxxx]]-> [ [xxxxxx]]-> [  [xxxxx]]-> [   [xxxx]]-> [    [xxx]]
     #"moving" moving a window  [[xxx]    ]-> [ [xxx]   ]-> [  [xxx]  ]-> [   [xxx] ]-> [    [xxx]]
-        WA_window: "fixed" #_ parameter_ "moving" "topdown" "downtop", not working for the AW and TW options where "moving" is always used
-        WA_window_slices: 1 # _parameter_ in how many parts do I cut the W/A window ? from 2 to 5, this is important to limit the complexity of the outputs
+        WA_window: "moving" #_ parameter_ "moving" "topdown" "downtop", "fixed" not working for the AW and TW options where "moving" is always used
+        WA_window_slices: 5 # _parameter_ in how many parts do I cut the W/A window ? from 2 to 5, this is important to limit the complexity of the outputs
                       # Note that the full range is always studied and shown in the first column of the histograms.
 
     # Ib: SIMULATION OF THE LABORATORY PROCESSES
@@ -115,13 +115,12 @@ analyticalStd : # !! not a parameter,  must remain unchanged  !!
 
 Rendering:  # !! not a parameter,  must remain unchanged  !!
     outputAs: "pdf" # _parameter_ can be svg (original design) or pdf
-    figSize: 30,30 #_parameter_ w,h increase h (and possibly w) to get the good view
+    figSize: 20,20 #_parameter_ w,h increase h (and possibly w) to get the good view
     userTitle: "" # _parameter_ adding an useful indication of your own
     bins: 500 # _parameter_ the number of bins for the histogram
-    d18OAf_range: 16,21 # _parameter_ the  d18OAf scale, ealways try with a large range like 12-22 and then focuse...
-    
+    d18OAf_range: 17,20.5 # _parameter_ the  d18OAf scale, ealways try with a large range like 12-22 and then focuse...
+    leftColumnOnly: False
     # IIb: THE COMPUTER
-threadsCount: auto            # _parameter_ [currently not used] an integer, else <auto> enables the optimization of the number of threads. Note that the speed will not be decreased proportionally with the number of threads (i.e over 1/2 of the total threads) as expected with multithreading there is an optimum.  Typically on a iMacPro (2017) with 3 GHz Intel Xeon W 20 threads: the speed increases rapidly until 10 threads, then the gain in speed is low (a very slowly growing plateau)
 
 # The output will be send to your browser as it can read the svg/pdf graphs
 instructionAndBrowserPath: open FILEPATH -a safari #_parameter_ instruction for your browsed to launch automatically the rendering through the browser. FILEPATH will be change to the current path automaticaly so DO NOT CHANGE THIS <FILEPATH>

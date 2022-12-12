@@ -39,7 +39,7 @@ import numpy as np
 
 
 
-def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,userTitle,d19OAf_range,typeOfFile,jobdescription):
+def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,leftColumnOnly,userTitle,d19OAf_range,typeOfFile,jobdescription):
      
 
     if args.Model:
@@ -202,7 +202,7 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
             steps=0
             #linescpt=0 if kolmncpt+=1 > ncols else kolmncpt+=1
             
-        plt.suptitle("Effect of Variation of "+sentenceC+" in multiple A/W ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
+        plt.suptitle("Effect of Variation of"+sentenceC+" in multiple A/W ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
         #plt.title("Effect of Variation of δ18OWi in multiple A/W ratio ranges")
         fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+"."+typeOfFile)
         #plt.show()
@@ -232,7 +232,10 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
         
         jumpBegin= WAlow #initialization
         jumpEnd=WAhigh
-        fig, axes = plt.subplots(nrows=NB1, ncols=len(slicesWA), figsize=figsize,constrained_layout=True)
+        if leftColumnOnly:
+            fig, axes = plt.subplots(nrows=NB1, ncols=1, figsize=figsize,constrained_layout=True)
+        else :
+            fig, axes = plt.subplots(nrows=NB1, ncols=len(slicesWA), figsize=figsize,constrained_layout=True)
         for w in range(0,len(slicesWA)):
             jumpBegin=slicesWA[w][0]
             jumpEnd=slicesWA[w][1]
@@ -240,36 +243,52 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
             klr=0
             for u in range(NB1):
                 klr=0
+                
                 for v in range(NB2):
-                    
                     print (klr,colors[klr])
                     UN=INIT1+(u*STEP1)
                     DEUX=INIT2+(v*STEP2)
                     print (w,"PARAMETRES",jumpBegin,jumpEnd,UN,DEUX)
+                    if not leftColumnOnly:
+                        
                     
 #                    data= arraysFiller(UN,DEUX,d18OAi,arraysize,WAlow,WAhigh,analyticalProcessSimulation,sigmaLab)
 #                    axes[linescpt][w].hist(data, bins=bins, range=d19OAf_range,alpha=0.2, density=False, label="δ18OWi "+str(DEUX)[:4])
                     
-                    data= arraysFiller(UN,DEUX,d18OAi,arraysize,jumpBegin,jumpEnd,analyticalProcessSimulation,sigmaLab)
-                    if  w==0:
-                        axes[linescpt][w].hist(data, bins=bins, range=d19OAf_range,color = colors[klr],alpha=0.5, density=False, label="δ18OWi "+str(DEUX)[:4])
-                    else:
-                        axes[linescpt][w].hist(data, bins=bins, range=d19OAf_range,alpha=0.5, density=False, label="δ18OWi "+str(DEUX)[:4])
-                    axes[linescpt][w].set_xlabel("δ18OAf", size=12)
-                    axes[linescpt][w].set_title(VAR+str(UN)+"  A/W range:"+str(jumpBegin).split(".")[0]+"."+str(jumpBegin).split(".")[1][0:2]+"-"+str(jumpEnd).split(".")[0]+"."+str(jumpEnd).split(".")[1][0:2], size=14)
-                    leg = axes[linescpt][w].legend(loc='upper left')
-                    leg.draw_frame(False)
-                    axes[linescpt][w].set_xlabel("δ18OAf", size=12)
-                    axes[linescpt][w].set_ylabel("Count", size=12)
-                    klr+=1
+                        data= arraysFiller(UN,DEUX,d18OAi,arraysize,jumpBegin,jumpEnd,analyticalProcessSimulation,sigmaLab)
+                    
+                        if  w==0:
+                            axes[linescpt][w].hist(data, bins=bins, range=d19OAf_range,color = colors[klr],alpha=0.5, density=False, label="δ18OWi "+str(DEUX)[:4])
+                        else:
+                            axes[linescpt][w].hist(data, bins=bins, range=d19OAf_range,alpha=0.5, density=False, label="δ18OWi "+str(DEUX)[:4])
+                        axes[linescpt][w].set_xlabel("δ18OAf", size=12)
+                        axes[linescpt][w].set_title(VAR+str(UN)+"  A/W range:"+str(jumpBegin).split(".")[0]+"."+str(jumpBegin).split(".")[1][0:2]+"-"+str(jumpEnd).split(".")[0]+"."+str(jumpEnd).split(".")[1][0:2], size=14)
+                        leg = axes[linescpt][w].legend(loc='upper left')
+                        leg.draw_frame(False)
+                        axes[linescpt][w].set_xlabel("δ18OAf", size=12)
+                        axes[linescpt][w].set_ylabel("Count", size=12)
+                        klr+=1
+                    else :
+                        if  w==0:
+                            data= arraysFiller(UN,DEUX,d18OAi,arraysize,jumpBegin,jumpEnd,analyticalProcessSimulation,sigmaLab)
+                        
+#                        if  w==0:
+#                            axes[linescpt].hist(data, bins=bins, range=d19OAf_range,color = colors[klr],alpha=0.5, density=False, label="δ18OWi "+str(DEUX)[:4])
+#                        else:
+                            axes[linescpt].hist(data, bins=bins, range=d19OAf_range,alpha=0.5, density=False, label="δ18OWi "+str(DEUX)[:4])
+                            axes[linescpt].set_xlabel("δ18OAf", size=12)
+                            axes[linescpt].set_title(VAR+str(UN)+"  A/W range:"+str(jumpBegin).split(".")[0]+"."+str(jumpBegin).split(".")[1][0:2]+"-"+str(jumpEnd).split(".")[0]+"."+str(jumpEnd).split(".")[1][0:2], size=14)
+                            leg = axes[linescpt].legend(loc='upper left')
+                            leg.draw_frame(False)
+                            axes[linescpt].set_xlabel("δ18OAf", size=12)
+                            axes[linescpt].set_ylabel("Count", size=12)
+                            klr+=1
                 linescpt+=1
-        plt.suptitle("Effect of Variation of "+sentenceC+" within a range of A/W from "+(str(WAlow)+" to "+str(WAhigh))+ " \nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
+        plt.suptitle(" Effect of Variation of "+sentenceC+" \nwithin a range of A/W from "+(str(WAlow)+" to "+str(WAhigh))+ " \nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
         fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+"."+typeOfFile)
         #plt.show()
         plt.savefig(fileIs)
-        EndinstructionAndBrowserPath=instructionAndBrowserPath.replace("FILEPATH",fileIs)
-        os.system(EndinstructionAndBrowserPath)
-        halt()
+        
     
     
     
@@ -277,22 +296,22 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
     
     
     
-    
-                    
-    plt.suptitle("Effect of Variation of"+sentenceC+" in multiple A/W ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
-        #plt.title("Effect of Variation of δ18OWi in multiple A/W ratio ranges")
-    if typeOfFile =="pdf": fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".pdf")
-    if typeOfFile =="svg":fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".svg")
-        #plt.show()
-    plt.savefig(fileIs)
     EndinstructionAndBrowserPath=instructionAndBrowserPath.replace("FILEPATH",fileIs)
     os.system(EndinstructionAndBrowserPath)
+                    
+    #plt.suptitle("Effect of Variation of"+sentenceC+" in multiple A/W ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
+        #plt.title("Effect of Variation of δ18OWi in multiple A/W ratio ranges")
+    #if typeOfFile =="pdf": fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".pdf")
+    #if typeOfFile =="svg":fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".svg")
+        #plt.show()
+    #plt.savefig(fileIs)
     halt()
         
 def arraysFiller(T,d18OWi,d18OAi,arraysize,WAlow,WAhigh,analyticalProcessSimulation,sigmaLab):
     """
     An array is constructed (WAarray) by sampling in an uniform repartition law with boundaries defined by WAlow,WAhigh
     Then a new array (d18OAf_array) is built by applying equation 4
+    At the end the normality tests are done and the error ratio returned
     """
     print ("ENVOI",T,d18OWi,d18OAi,arraysize,WAlow,WAhigh,analyticalProcessSimulation,sigmaLab)
     DELTA=(117.4-T)/4.5 #equation 3 Lécuyer et al. (2013) - CL is for ChristopheLécuyer
@@ -361,6 +380,7 @@ def readParameters(parameterYAML):
         print(threadsCount,instructionAndBrowserPath,usersize)
         figsize=(int(usersize[0]),int(usersize[1]))
         print(figsize)
+        leftColumnOnly=parameterdictionary["Rendering"]["leftColumnOnly"]
         userTitle=parameterdictionary["Rendering"]["userTitle"]
         bins=parameterdictionary["Rendering"]["bins"]
         print (userTitle)
@@ -371,7 +391,7 @@ def readParameters(parameterYAML):
         print ("All is OK")
         print (parameterdictionary)
         
-        return arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,userTitle,d19OAf_range,typeOfFile
+        return arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,leftColumnOnly,userTitle,d19OAf_range,typeOfFile
     except :
         stop()
 def stop(valeur='\n----------------------------------\nMODELING IS CANCELED\n\nSEE YOU SOON !\n----------------------------------\n'):
@@ -420,20 +440,20 @@ if __name__ == "__main__":
     
     if args.Model:
         print("\n\n#####################################  ApaOxIS ###################################################\n")
-        arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,userTitle,d19OAf_range,typeOfFile=readParameters(args.i)
+        arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,leftColumnOnly,userTitle,d19OAf_range,typeOfFile=readParameters(args.i)
         jobdescription=""
-        for u in ("m",arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab):
+        for u in ("m",arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,leftColumnOnly):
             jobdescription+=str(u)+'~'
         
 #        DELTA=(117.4-T)/4.5
 #        print ("T",T,"A",computeEquation(DELTA,-8,20,0.5))
 #        halt(computeEquation(DELTA,-8,20,0.5))
-        coreProgram(args.o,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,userTitle,d19OAf_range,typeOfFile,jobdescription.strip('~'))
+        coreProgram(args.o,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,leftColumnOnly,userTitle,d19OAf_range,typeOfFile,jobdescription.strip('~'))
     if args.Water or args.Temperature or args.Sigma or args.Apatite or args.TwinTW or args.TwinAW:
         print("\n\n#####################################  ApaOxIS ###################################################\n")
-        arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,userTitle,d19OAf_range,typeOfFile=readParameters(args.i)
+        arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,leftColumnOnly,userTitle,d19OAf_range,typeOfFile=readParameters(args.i)
         jobdescription=""
-        for u in (sys.argv[1],arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab):
+        for u in (sys.argv[1],arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,leftColumnOnly):
             jobdescription+=str(u)+'~'
         print(jobdescription)
-        coreProgram(args.o,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,userTitle,d19OAf_range,typeOfFile,jobdescription.strip('~'))
+        coreProgram(args.o,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,leftColumnOnly,userTitle,d19OAf_range,typeOfFile,jobdescription.strip('~'))
