@@ -1,5 +1,5 @@
 """
-                                     ApaOxIMOD
+                                     ApaOxIMOD "testing"
                     Modeling the evolution of Apatite Oxygen Isotopes
                                         A
 Monte-Carlo simulation of the alteration of the original oxygen isotope composition of biogenic apatites
@@ -19,11 +19,13 @@ Christophe Lécuyer(1) and Jean-Pierre Flandrois(2)
 The program is made available under the [CeCILL2.1](http://www.cecill.info/licences/Licence_CeCILL_V2.1-en.txt) licence.
 ----
 How it works :
-The simulation tool ApaOxIMOD is basically a Monte Carlo process simulation, based on the creation of a huge array of A/W values taken from an uniform distribution between given threshold values. A moving A/W window may be set within the threshold values to study the influence of modifications of the A/W environment. This represents the diversity of the deposit situation and physical state of the biological apatite. Typically, 500,000 situations are simulated. For each situation equation (4) is used to compute the δ18O in biological apatite δ18O(A)f at the equilibrium on the whole array given the temperature T, initial δ18O in biological apatite (δ18O(A)i) and the δ18O in water δ18O(W)i. The four parameters (T, d18OWi, d18OAi) may be set and their variations may be explored by steps for each simulated A/W environment to analyze the relative influence of each parameter. The output is a family of histograms summarizing the possible fate of δ18O(A)i in the population after the diagenetic episode.
+The simulation tool ApaOxIMOD is basically a Monte Carlo process simulation, based on the creation of a huge array of W/A values taken from an uniform distribution between given threshold values. A moving W/A window may be set within the threshold values to study the influence of modifications of the W/A environment. This represents the diversity of the deposit situation and physical state of the biological apatite. Typically, 500,000 situations are simulated. For each situation equation (4) is used to compute the δ18O in biological apatite δ18O(A)f at the equilibrium on the whole array given the temperature T, initial δ18O in biological apatite (δ18O(A)i) and the δ18O in water δ18O(W)i. The four parameters (T, d18OWi, d18OAi) may be set and their variations may be explored by steps for each simulated W/A environment to analyze the relative influence of each parameter. The output is a family of histograms summarizing the possible fate of δ18O(A)i in the population after the diagenetic episode.
 
 How it is written :
     The program is entirely relying on the array structure of NumPy to take advantage of the speed and efficiency of NumPy in manipulating large arrays. The statistics are also computing with NumPy function and python3 is minimally used to connect Nympy functions and for reporting. The 15 possible parameters and options are taken from a pilot file using the YAML format that requires only a plain-text editor to be quickly changed.
     Note that python3.11 is 10% more rapid than the previous versions, you may consider using it or future versions (>3.11).
+    
+This "testing" flavor is designed specifically to enable a simplification of the outputs by using the option "leftColumnOnly: {False,True}" in the parameters file. Whe leftColumnOnly is False, this corresponds to the main version of ApaOxIMOD, if set True, only the left column remains and takes the colors code of the sub-parameter space. This is NOT to be use except if you understand what you want to show as many informations are lost.
 """
 
 import argparse, pickle, os,sys
@@ -55,7 +57,7 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
         fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+"."+typeOfFile)
         #plt.show()
         plt.savefig(fileIs)
-    if args.TwinAW:
+    if args.TwinWA:
         INIT1=d18OAi
         STEP1=d18OAistep
         NB1=d18OAinbsteps
@@ -69,7 +71,7 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
         INIT2=d18OWi
         STEP2=d18OWistep
         NB2=d18OWinbsteps
-    if args.TwinTW: #two parameters varying + A/W by ranges
+    if args.TwinTW: #two parameters varying + W/A by ranges
         INIT1=T
         STEP1=Tstep
         NB1=Tnbsteps
@@ -160,7 +162,7 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
                         axes[linescpt][kolmncpt].set_xlabel("δ18OAf", size=12)
                         axes[linescpt][kolmncpt].set_ylabel("Count", size=12)
                         leg = axes[linescpt][kolmncpt].legend(loc='upper left')
-                        axes[linescpt][kolmncpt].set_title("A/W ="+str(jumpBegin)[:4]+"-"+str(jumpEnd)[:4]+sentenceA+ str(PROCESS), fontsize=14)
+                        axes[linescpt][kolmncpt].set_title("W/A ="+str(jumpBegin)[:4]+"-"+str(jumpEnd)[:4]+sentenceA+ str(PROCESS), fontsize=14)
                     else:
                         if args.Temperature: data = arraysFiller(PROCESS,d18OWi,d18OAi,arraysize,jumpBegin,jumpEnd,analyticalProcessSimulation,sigmaLab)
                         if args.Sigma: data = arraysFiller(T,d18OWi,d18OAi,arraysize,jumpBegin,jumpEnd,analyticalProcessSimulation,PROCESS)
@@ -172,7 +174,7 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
                         leg.draw_frame(False)
                         axes[linescpt][1].set_xlabel("δ18OAf", size=12)
                         axes[linescpt][1].set_ylabel("Count", size=12)
-                        axes[linescpt][1].set_title("A/W varying (see legend) "+sentenceB+ str(PROCESS), fontsize=14)
+                        axes[linescpt][1].set_title("W/A varying (see legend) "+sentenceB+ str(PROCESS), fontsize=14)
                     if WA_window=="moving":
                         if steps==-1 :
                             jumpEnd=WAlow+jump
@@ -202,14 +204,14 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
             steps=0
             #linescpt=0 if kolmncpt+=1 > ncols else kolmncpt+=1
             
-        plt.suptitle("Effect of Variation of"+sentenceC+" in multiple A/W ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
-        #plt.title("Effect of Variation of δ18OWi in multiple A/W ratio ranges")
+        plt.suptitle("Effect of Variation of"+sentenceC+" in multiple W/A ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
+        #plt.title("Effect of Variation of δ18OWi in multiple W/A ratio ranges")
         fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+"."+typeOfFile)
         #plt.show()
         plt.savefig(fileIs)
     
     
-    if args.TwinTW or args.TwinAW: #only moving window on A/W range
+    if args.TwinTW or args.TwinWA: #only moving window on W/A range
         colors = ['#A52A2A','#800000','#8B4513', '#a0522d', '#D2691E', '#cd853f','#b8860b','#ffa07a', '#daa520' ,'#BC8F8F',  ]#["b", "r", "m", "w", "k", "g", "c", "y"]#ffdead #A52A2A #8B4513
         
         
@@ -262,7 +264,7 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
                         else:
                             axes[linescpt][w].hist(data, bins=bins, range=d19OAf_range,alpha=0.5, density=False, label="δ18OWi "+str(DEUX)[:4])
                         axes[linescpt][w].set_xlabel("δ18OAf", size=12)
-                        axes[linescpt][w].set_title(VAR+str(UN)+"  A/W range:"+str(jumpBegin).split(".")[0]+"."+str(jumpBegin).split(".")[1][0:2]+"-"+str(jumpEnd).split(".")[0]+"."+str(jumpEnd).split(".")[1][0:2], size=14)
+                        axes[linescpt][w].set_title(VAR+str(UN)+"  W/A range:"+str(jumpBegin).split(".")[0]+"."+str(jumpBegin).split(".")[1][0:2]+"-"+str(jumpEnd).split(".")[0]+"."+str(jumpEnd).split(".")[1][0:2], size=14)
                         leg = axes[linescpt][w].legend(loc='upper left')
                         leg.draw_frame(False)
                         axes[linescpt][w].set_xlabel("δ18OAf", size=12)
@@ -277,14 +279,14 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
 #                        else:
                             axes[linescpt].hist(data, bins=bins, range=d19OAf_range,alpha=0.5, density=False, label="δ18OWi "+str(DEUX)[:4])
                             axes[linescpt].set_xlabel("δ18OAf", size=12)
-                            axes[linescpt].set_title(VAR+str(UN)+"  A/W range:"+str(jumpBegin).split(".")[0]+"."+str(jumpBegin).split(".")[1][0:2]+"-"+str(jumpEnd).split(".")[0]+"."+str(jumpEnd).split(".")[1][0:2], size=14)
+                            axes[linescpt].set_title(VAR+str(UN)+"  W/A range:"+str(jumpBegin).split(".")[0]+"."+str(jumpBegin).split(".")[1][0:2]+"-"+str(jumpEnd).split(".")[0]+"."+str(jumpEnd).split(".")[1][0:2], size=14)
                             leg = axes[linescpt].legend(loc='upper left')
                             leg.draw_frame(False)
                             axes[linescpt].set_xlabel("δ18OAf", size=12)
                             axes[linescpt].set_ylabel("Count", size=12)
                             klr+=1
                 linescpt+=1
-        plt.suptitle(" Effect of Variation of "+sentenceC+" \nwithin a range of A/W from "+(str(WAlow)+" to "+str(WAhigh))+ " \nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
+        plt.suptitle(" Effect of Variation of "+sentenceC+" \nwithin a range of W/A from "+(str(WAlow)+" to "+str(WAhigh))+ " \nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
         fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+"."+typeOfFile)
         #plt.show()
         plt.savefig(fileIs)
@@ -299,8 +301,8 @@ def coreProgram(outputDir,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbs
     EndinstructionAndBrowserPath=instructionAndBrowserPath.replace("FILEPATH",fileIs)
     os.system(EndinstructionAndBrowserPath)
                     
-    #plt.suptitle("Effect of Variation of"+sentenceC+" in multiple A/W ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
-        #plt.title("Effect of Variation of δ18OWi in multiple A/W ratio ranges")
+    #plt.suptitle("Effect of Variation of"+sentenceC+" in multiple W/A ratio ranges and for multiple "+sentenceD+" values\nC. Lecuyer and JP. Flandrois 2023\n"+userTitle, fontsize=16)
+        #plt.title("Effect of Variation of δ18OWi in multiple W/A ratio ranges")
     #if typeOfFile =="pdf": fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".pdf")
     #if typeOfFile =="svg":fileIs=os.path.join(outputDir,"ApaOxIS_model"+"~"+jobdescription+".svg")
         #plt.show()
@@ -413,23 +415,23 @@ def createFolder(directory):
         print(('Error: Creating directory. ' +  directory))
         
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog="ApaOxIS",description='''
-    APAtite OXygen Isotope Simulation (modeling).
-    ApaOxIS has been designed to simulate the fate of biogenic apatite δ18O during diagenesis in given conditions. Note that the .yaml file contains all the parameters, including parameters for the rendering and visiualisation.
+    parser = argparse.ArgumentParser(prog="ApaOxIMOD",description='''
+    APAtite OXygen Isotope Modeling.
+    ApaOxIMOD has been designed to simulate the fate of biogenic apatite δ18O during diagenesis in given conditions. Note that the .yaml file contains all the parameters, including parameters for the rendering and visiualisation.
     ''',
     epilog="""
     place our references here (paper, site...)
     """)
 
-    #print("\n\n#####################################  ApaOxIS ###################################################\n")
+    #print("\n\n#####################################  ApaOxIMOD ###################################################\n")
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("-W", "--Water", action='store_true', help="Cross variations of δ18OWi and A/W")
-    group.add_argument("-A", "--Apatite", action='store_true', help="Cross variations of δ18OAi and A/W")
-    group.add_argument("-T", "--Temperature", action='store_true', help="Cross variations of T and A/W")
-    group.add_argument("-S", "--Sigma", action='store_true', help="Cross variations of analytical σ and A/W")
+    group.add_argument("-W", "--Water", action='store_true', help="Cross variations of δ18OWi and W/A")
+    group.add_argument("-A", "--Apatite", action='store_true', help="Cross variations of δ18OAi and W/A")
+    group.add_argument("-T", "--Temperature", action='store_true', help="Cross variations of T and W/A")
+    group.add_argument("-S", "--Sigma", action='store_true', help="Cross variations of analytical σ and W/A")
     group.add_argument("-m", "--Model", action='store_true', help="Only one histogram for given fixed conditions")
-    group.add_argument("-TW", "--TwinTW", action='store_true', help="Both variations of T and δ18OWi within 1-4 ranges of A/W : a collection of histograms")
-    group.add_argument("-AW", "--TwinAW", action='store_true', help="Both variations of δ18OAi and δ18OWi within 1-4 ranges of A/W : a collection of histograms")
+    group.add_argument("-TW", "--TwinTW", action='store_true', help="Both variations of T and δ18OWi within 1-4 ranges of W/A : a collection of histograms")
+    group.add_argument("-WA", "--TwinWA", action='store_true', help="Both variations of δ18OAi and δ18OWi within 1-4 ranges of W/A : a collection of histograms")
     parser.add_argument("i", type=str, help="the parameter file (yaml file, WARNING: structure is mandatory)")
     parser.add_argument("o", type=str, help="The _directory_ that will gather the results ")
     args = parser.parse_args()
@@ -439,7 +441,7 @@ if __name__ == "__main__":
     
     
     if args.Model:
-        print("\n\n#####################################  ApaOxIS ###################################################\n")
+        print("\n\n#####################################  ApaOxIMOD ###################################################\n")
         arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,leftColumnOnly,userTitle,d19OAf_range,typeOfFile=readParameters(args.i)
         jobdescription=""
         for u in ("m",arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,leftColumnOnly):
@@ -449,8 +451,8 @@ if __name__ == "__main__":
 #        print ("T",T,"A",computeEquation(DELTA,-8,20,0.5))
 #        halt(computeEquation(DELTA,-8,20,0.5))
         coreProgram(args.o,arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,leftColumnOnly,userTitle,d19OAf_range,typeOfFile,jobdescription.strip('~'))
-    if args.Water or args.Temperature or args.Sigma or args.Apatite or args.TwinTW or args.TwinAW:
-        print("\n\n#####################################  ApaOxIS ###################################################\n")
+    if args.Water or args.Temperature or args.Sigma or args.Apatite or args.TwinTW or args.TwinWA:
+        print("\n\n#####################################  ApaOxIMOD ###################################################\n")
         arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,sigmaLabstep,sigmaLabnbsteps,threadsCount,instructionAndBrowserPath,figsize,bins,leftColumnOnly,userTitle,d19OAf_range,typeOfFile=readParameters(args.i)
         jobdescription=""
         for u in (sys.argv[1],arraysize,T,Tstep,Tnbsteps,d18OWi,d18OWistep,d18OWinbsteps,d18OAi,d18OAistep,d18OAinbsteps,WAlow,WAhigh,WA_window,WA_window_slices,analyticalProcessSimulation,sigmaLab,leftColumnOnly):

@@ -1,3 +1,13 @@
+###########################
+#        Parameters corresponding to the figure given in the publication
+#
+#       python3 ApaOxIMOD_testing.py -TW MODELO18testing2.yaml ../../testFL
+#       Note : please use the "testing" version where it is possible to simplify the outputs by showing or not only one column (leftColumnOnly: True/False). This option has not been added in ApaOxIMOD.py as is is of limited use.
+# results in: ApaOxIS_model~-TW~2000000~10~5~6~-8.0~-1~8~20.0~1~9~0.05~0.15~moving~2~True~0.1~False.pdf
+###########################
+
+
+
 #   Summary : This is the companion file for
 #                                           ApaOxIMOD
 # A Monte-Carlo simulation of the alteration of the original oxygen isotope composition of biogenic apatites
@@ -16,7 +26,7 @@
 #   The program is made available under the [CeCILL2.1](http://www.cecill.info/licences/Licence_CeCILL_V2.1-en.txt) licence.
 #   ----
 
-
+#    ################# parameters corresponding to the figure in the publication (left row) ######################
 
 
 ###########################
@@ -24,7 +34,7 @@
 #     ApaOxISMODEL.py
 ###########################
 # launching the program like this :
-#               python3 ApaOxISMODEL.py -m parameters.yaml output_directory
+#               python3 ApaOxISMOD.py -m parameters.yaml output_directory
 
 #parameters.yaml is _this file_ (any name) remember that YAML is a human-readable data serialization language where identation and white-spaces are signifiant
 
@@ -72,35 +82,35 @@ Modelparameterdictionary :      # !! not a parameter,  must remain unchanged  !!
     # 4 parameters may be set and they may be explored by steps (T, d18OWi, d18OAi) and W/A may be constant or varying by using a range and a sub-range and the way to explore the W/A effect
     # note that 10 values for T, d18OWi and d18OAi led to 9x9x9 will generate 81 pages containing 9 histograms !
     # adding W/A variations may increase this to more than 1000 pages !
-    #
+    
     # mind the "" around words (not for numbers or boolean)
     T:      # !! not a parameter,  must remain unchanged  !!
         initialvalue: 10               #_parameter_ Temperature (C°) during the diagenesis process, positive integer
-        step : 10    #_parameter_ the numerical value of a step
-        nb_steps: 5 #_parameter_ the number of steps, maximum 9
+        step : 5    #_parameter_ the numerical value of a step
+        nb_steps: 6 #_parameter_ the number of steps, maximum 9
         
     d18OWi:     # !! not a parameter,  must remain unchanged  !!
         initialvalue: -8.0        #parameter_ Initial δ18O for water, float
-        step : -2   #_parameter_ the numerical value of a step
-        nb_steps: 4 # _parameter_ the number of steps, maximum 9
+        step : -1   #_parameter_ the numerical value of a step
+        nb_steps: 8 # _parameter_ the number of steps, maximum 9
                     #ex: step=-1 : 8*-1=-8 if initialvalue=-8.0 range will be (-8, -16)
                     # ex: step=-2 : 8*-2=-16 if initialvalue=-8.0 range will be (-8,-24)
         
     d18OAi:     # !! not a parameter,  must remain unchanged  !!
         initialvalue: 20.0        #Initial δ18O for apatite, float
         step: 1 #_parameter_ the numerical value of a step
-        nb_steps: 4 # _parameter_ the number of steps, maximum 9
+        nb_steps: 9 # _parameter_ the number of steps, maximum 9
         
     WA:     # !! not a parameter,  must remain unchanged  !!
         WAlow: 0.05          #_parameter_ the lower W/A ratio during the simulation, float WAlow > 0
-        WAhigh: 0.95         #_parameter_ the higher W/A ratio during the simulation, float WAhigh < 1
+        WAhigh: 0.15         #_parameter_ the higher W/A ratio during the simulation, float WAhigh < 1
     #this W/A range may be explored by restricting or moving a window of p % of the W/A range
     #"fixed" the window is identical to the W/A space [[xxxxxxx]] This however is always presented in the first column ...
     #"topdown" schreading from top to bottom [[xxxxxxx]]-> [[xxxxxx] ]-> [[xxxxx]  ]-> [[xxxx]   ]-> [[xxx]    ]
     #"downtop" schreading from bottom to top [[xxxxxxx]]-> [ [xxxxxx]]-> [  [xxxxx]]-> [   [xxxx]]-> [    [xxx]]
     #"moving" moving a window  [[xxx]    ]-> [ [xxx]   ]-> [  [xxx]  ]-> [   [xxx] ]-> [    [xxx]]
-        WA_window: "moving" #_ parameter_ "moving" "topdown" "downtop", not working for the WA and TW options where "moving" is always used
-        WA_window_slices: 5 # _parameter_ in how many parts do I cut the W/A window ? from 2 to 5, this is important to limit the complexity of the outputs
+        WA_window: "moving" #_ parameter_ "moving" "topdown" "downtop", "fixed" not working for the WA and TW options where "moving" is always used
+        WA_window_slices: 2 # _parameter_ in how many parts do I cut the W/A window ? from 2 to 5, this is important to limit the complexity of the outputs
                       # Note that the full range is always studied and shown in the first column of the histograms.
 
     # Ib: SIMULATION OF THE LABORATORY PROCESSES
@@ -118,8 +128,8 @@ Rendering:  # !! not a parameter,  must remain unchanged  !!
     figSize: 20,20 #_parameter_ w,h increase h (and possibly w) to get the good view
     userTitle: "" # _parameter_ adding an useful indication of your own
     bins: 500 # _parameter_ the number of bins for the histogram
-    d18OAf_range: 12,20.5 # _parameter_ the  d18OAf scale, ealways try with a large range like 12-22 and then focuse...
-    
+    d18OAf_range: 17,20.5 # _parameter_ the  d18OAf scale, ealways try with a large range like 12-22 and then focuse...
+    leftColumnOnly: False
     # IIb: THE COMPUTER
 
 # The output will be send to your browser as it can read the svg/pdf graphs

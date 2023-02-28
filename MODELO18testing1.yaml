@@ -1,3 +1,12 @@
+###########################
+#        Parameters corresponding to the figure given in the publication
+#
+#       python3 ApaOxIMOD_testing.py -T MODELO18testing1.yaml ../../testFL
+#       Note : please use the "testing" version where it is possible to simplify the outputs by showing or not only one column (leftColumnOnly: True/False). This option has not been added in ApaOxIMOD.py as is is of limited use.
+# results in: ApaOxIS_model~-T~2000000~10~10~5~-8.0~-2~4~20.0~1~4~0.05~0.95~moving~5~True~0.1~False.pdf
+###########################
+
+
 #   Summary : This is the companion file for
 #                                           ApaOxIMOD
 # A Monte-Carlo simulation of the alteration of the original oxygen isotope composition of biogenic apatites
@@ -16,7 +25,7 @@
 #   The program is made available under the [CeCILL2.1](http://www.cecill.info/licences/Licence_CeCILL_V2.1-en.txt) licence.
 #   ----
 
-
+#    ################# parameters corresponding to the figure in the publication (left row) ######################
 
 
 ###########################
@@ -72,7 +81,7 @@ Modelparameterdictionary :      # !! not a parameter,  must remain unchanged  !!
     # 4 parameters may be set and they may be explored by steps (T, d18OWi, d18OAi) and W/A may be constant or varying by using a range and a sub-range and the way to explore the W/A effect
     # note that 10 values for T, d18OWi and d18OAi led to 9x9x9 will generate 81 pages containing 9 histograms !
     # adding W/A variations may increase this to more than 1000 pages !
-    #
+    
     # mind the "" around words (not for numbers or boolean)
     T:      # !! not a parameter,  must remain unchanged  !!
         initialvalue: 10               #_parameter_ Temperature (C°) during the diagenesis process, positive integer
@@ -99,7 +108,7 @@ Modelparameterdictionary :      # !! not a parameter,  must remain unchanged  !!
     #"topdown" schreading from top to bottom [[xxxxxxx]]-> [[xxxxxx] ]-> [[xxxxx]  ]-> [[xxxx]   ]-> [[xxx]    ]
     #"downtop" schreading from bottom to top [[xxxxxxx]]-> [ [xxxxxx]]-> [  [xxxxx]]-> [   [xxxx]]-> [    [xxx]]
     #"moving" moving a window  [[xxx]    ]-> [ [xxx]   ]-> [  [xxx]  ]-> [   [xxx] ]-> [    [xxx]]
-        WA_window: "moving" #_ parameter_ "moving" "topdown" "downtop", not working for the WA and TW options where "moving" is always used
+        WA_window: "moving" #_ parameter_ "moving" "topdown" "downtop", "fixed" not working for the WA and TW options where "moving" is always used
         WA_window_slices: 5 # _parameter_ in how many parts do I cut the W/A window ? from 2 to 5, this is important to limit the complexity of the outputs
                       # Note that the full range is always studied and shown in the first column of the histograms.
 
@@ -118,8 +127,9 @@ Rendering:  # !! not a parameter,  must remain unchanged  !!
     figSize: 20,20 #_parameter_ w,h increase h (and possibly w) to get the good view
     userTitle: "" # _parameter_ adding an useful indication of your own
     bins: 500 # _parameter_ the number of bins for the histogram
-    d18OAf_range: 12,20.5 # _parameter_ the  d18OAf scale, ealways try with a large range like 12-22 and then focuse...
-    
+    # d18OAf_range: 17,20.5 # _parameter_ the  d18OAf scale, ealways try with a large range like 12-22 and then focuse...
+    d18OAf_range: 12,21 # _parameter_ the  d18OAf scale, ealways try with a large range like 12-22 and then focuse...
+    leftColumnOnly: False
     # IIb: THE COMPUTER
 
 # The output will be send to your browser as it can read the svg/pdf graphs
